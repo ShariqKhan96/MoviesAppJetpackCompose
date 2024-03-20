@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.example.movies.composables.MovieItem
-import com.example.movies.screen.movie_detail.MovieDetailsActivity
+import com.example.movies.movie_detail.ui.MovieItem
+import com.example.movies.movie_detail.ui.MovieDetailsActivity
 import com.example.movies.ui.theme.MoviesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //  val movies = viewModel.filteredMovies.collectAsState(emptyList()).value
             val movieState = viewModel.movieList.collectAsState().value
             val searchQuery = viewModel.searchQuery.collectAsState().value
 

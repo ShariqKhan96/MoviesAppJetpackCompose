@@ -3,7 +3,12 @@ package com.example.movies.screen.movie_detail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.movies.model.MovieDetailEntity
+import com.example.movies.core.resource.Resource
+import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
+import com.example.movies.movie_detail.domain.MovieDetailRepository
+import com.example.movies.movie_detail.domain.use_case.GetMovieDetailByIdUseCase
+import com.example.movies.movie_detail.ui.MovieDetailViewModel
+import com.example.movies.movie_list.data.toDomain
 import com.example.movies.movie_list.domain.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,14 +33,17 @@ class MovieDetailViewModelTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    lateinit var repository: MovieRepository
+    lateinit var repository: MovieDetailRepository
 
     private lateinit var viewModel: MovieDetailViewModel
+
+    private lateinit var getMovieDetailByIdUseCase: GetMovieDetailByIdUseCase
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        viewModel = MovieDetailViewModel(repository)
+        getMovieDetailByIdUseCase = GetMovieDetailByIdUseCase(repository)
+        viewModel = MovieDetailViewModel(getMovieDetailByIdUseCase)
     }
 
     @After
@@ -46,12 +54,12 @@ class MovieDetailViewModelTest {
     @Test
     fun shouldEmitDataOnFetchMovieDetails() = runTest {
         val movieId = 123
-        val movieDetailResponse = createMockMovieDetailEntity() // Create a mock MovieDetailEntity
-     //   Mockito.`when`(repository.getMovieDetail(movieId)).thenReturn(movieDetailResponse)
+        val movieDetailResponse = createMockMovieDetailEntity().toDomain() // Create a mock MovieDetailEntity
+        Mockito.`when`(repository.getMovieDetail(movieId)).thenReturn(Resource.Success(movieDetailResponse))
 
         viewModel.fetchMovieDetail(movieId)
 
-        val result = viewModel.movieDetail.first() // Observe the StateFlow
+        val result = viewModel.movieDetailState.value.data // Observe the StateFlow
         assertNotNull(result)
         assertEquals(movieDetailResponse, result)
     }

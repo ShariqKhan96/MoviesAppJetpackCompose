@@ -1,4 +1,4 @@
-package com.example.movies.api
+package com.example.movies.movie_detail.data.dto.remote
 
 data class MovieDetailResponse(
     val adult: Boolean,

@@ -26,7 +26,7 @@ object AppModule {
 
     @Provides
     @Singleton
-        fun provideMoviesRepository(apiService: ApiService, moviesDao: MovieDao, movieDetailsDao: MovieDetailsDao, couroutineScope : CoroutineDispatcher): MovieRepository = MovieRepositoryImpl(moviesDao, apiService, movieDetailsDao, Dispatchers.Main)
+        fun provideMoviesRepository(apiService: ApiService, moviesDao: MovieDao, movieDetailsDao: MovieDetailsDao, couroutineScope : CoroutineDispatcher): MovieRepository = MovieRepositoryImpl(moviesDao, apiService)
 
 
     @Provides

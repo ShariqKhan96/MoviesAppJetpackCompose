@@ -24,10 +24,8 @@ object MovieListModule {
     fun provideMoviesRepository(
         apiService: ApiService,
         moviesDao: MovieDao,
-        movieDetailsDao: MovieDetailsDao,
-        couroutineScope: CoroutineDispatcher
     ): MovieRepository =
-        MovieRepositoryImpl(moviesDao, apiService, movieDetailsDao, Dispatchers.Main)
+        MovieRepositoryImpl(moviesDao, apiService)
 
     @Provides
     fun provideMovieListUseCase(movieRepository: MovieRepository): MovieListUseCase =

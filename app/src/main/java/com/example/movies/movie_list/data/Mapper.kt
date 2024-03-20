@@ -1,7 +1,8 @@
 package com.example.movies.movie_list.data
 
-import com.example.movies.api.MovieDetailResponse
-import com.example.movies.model.MovieDetailEntity
+import com.example.movies.movie_detail.data.dto.remote.MovieDetailResponse
+import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
+import com.example.movies.movie_detail.domain.model.MovieDetails
 import com.example.movies.movie_list.data.dto.local.MovieEntity
 import com.example.movies.movie_list.domain.model.Movie
 
@@ -18,6 +19,20 @@ fun MovieDetailResponse.toEntity() = MovieDetailEntity(
     tagline = this.tagline,
     homepage = this.homepage,
     imdbId = this.imdb_id
+)
+
+fun MovieDetailEntity.toDomain() = MovieDetails(
+    id = this.id,
+    title = this.title,
+    posterPath = this.posterPath,
+    backdropPath = this.backdropPath,
+    overview = this.overview,
+    releaseDate = this.releaseDate,
+    budget = this.budget,
+    runtime = this.runtime,
+    tagline = this.tagline,
+    homepage = this.homepage,
+    imdbId = this.imdbId
 )
 
 

@@ -1,11 +1,9 @@
-package com.example.movies.composables
+package com.example.movies.movie_detail.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,11 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.example.movies.api.Genre
-import com.example.movies.api.MovieDetailResponse
-import com.example.movies.model.MovieDetailEntity
+import com.example.movies.movie_detail.domain.model.MovieDetails
+
 @Composable
-fun MovieDetailScreen(movieDetail: MovieDetailEntity) {
+fun MovieDetailScreen(movieDetail: MovieDetails) {
     val baseUrl = "https://image.tmdb.org/t/p/w500"
 
     Column(

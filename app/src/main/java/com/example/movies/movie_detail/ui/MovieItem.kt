@@ -1,4 +1,4 @@
-package com.example.movies.composables
+package com.example.movies.movie_detail.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
