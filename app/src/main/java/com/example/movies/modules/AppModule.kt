@@ -6,8 +6,8 @@ import com.example.movies.AppDatabase
 import com.example.movies.dao.MovieDao
 import com.example.movies.api.ApiService
 import com.example.movies.dao.MovieDetailsDao
-import com.example.movies.repository.MovieRepository
-import com.example.movies.repository.MovieRepositoryImpl
+import com.example.movies.movie_list.domain.repository.MovieRepository
+import com.example.movies.movie_list.data.repository_impl.MovieRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

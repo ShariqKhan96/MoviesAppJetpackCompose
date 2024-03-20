@@ -1,6 +1,6 @@
 package com.example.movies.api
 
-import com.example.movies.MovieResponse
+import com.example.movies.movie_list.data.dto.remote.MovieResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

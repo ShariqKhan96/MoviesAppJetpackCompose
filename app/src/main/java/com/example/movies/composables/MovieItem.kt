@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.example.movies.Movie
+import com.example.movies.movie_list.domain.model.Movie
 
 @Composable
 fun MovieItem(

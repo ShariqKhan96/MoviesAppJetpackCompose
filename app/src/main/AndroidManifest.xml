@@ -18,7 +18,7 @@
         android:theme="@style/Theme.Movies"
         tools:targetApi="31">
         <activity
-            android:name=".screen.movie_list.MainActivity"
+            android:name=".movie_list.ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Movies">

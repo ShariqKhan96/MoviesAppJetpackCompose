@@ -3,7 +3,7 @@ package com.example.movies.screen.movie_detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies.model.MovieDetailEntity
-import com.example.movies.repository.MovieRepository
+import com.example.movies.movie_list.domain.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +18,8 @@ class MovieDetailViewModel @Inject constructor(private val repository: MovieRepo
     fun fetchMovieDetail(movieId: Int) {
         viewModelScope.launch {
             try {
-                val movieDetailResponse = repository.getMovieDetail(movieId)
-                _movieDetail.value = movieDetailResponse
+               // val movieDetailResponse = repository.getMovieDetail(movieId)
+               // _movieDetail.value = movieDetailResponse
             } catch (e: Exception) {
                 e.printStackTrace()
             }

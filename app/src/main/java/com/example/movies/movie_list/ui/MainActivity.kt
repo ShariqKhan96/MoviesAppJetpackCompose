@@ -1,8 +1,9 @@
-package com.example.movies.screen.movie_list
+package com.example.movies.movie_list.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -13,16 +14,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.example.movies.composables.MovieItem
@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val movies = viewModel.filteredMovies.collectAsState(emptyList()).value
-            Log.d("hamza", "size = " + movies.size)
-            var searchQuery  =  viewModel.searchQuery.collectAsState().value
+            //  val movies = viewModel.filteredMovies.collectAsState(emptyList()).value
+            val movieState = viewModel.movieList.collectAsState().value
+            val searchQuery = viewModel.searchQuery.collectAsState().value
 
 
             MoviesTheme {
@@ -59,12 +59,15 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                                decorationBox = { innerTextField ->
+                        decorationBox = { innerTextField ->
                             Row(
                                 modifier = Modifier
                                     .padding(horizontal = 20.dp)
                                     .fillMaxWidth()
-                                    .background(color = Color(0xFFD2F3F2), shape = RoundedCornerShape(size = 16.dp))
+                                    .background(
+                                        color = Color(0xFFD2F3F2),
+                                        shape = RoundedCornerShape(size = 16.dp)
+                                    )
                                     .border(
                                         width = 2.dp,
                                         color = Color.Cyan,
@@ -85,17 +88,27 @@ class MainActivity : ComponentActivity() {
                         }
                     )
 
-
-                    LazyColumn {
-                        items(movies) { movie ->
-                            MovieItem(
-                                movie = movie,
-                                baseUrl = "https://image.tmdb.org/t/p/w500"
-                            ) { movieId ->
-                                launchDetailActivity(movieId)
+                    if (movieState.loading) {
+                        CircularProgressIndicator(modifier = Modifier.fillMaxSize().padding(150.dp))
+                    }
+                    if (movieState.data.isNotEmpty()) {
+                        LazyColumn {
+                            items(movieState.data) { movie ->
+                                MovieItem(
+                                    movie = movie,
+                                    baseUrl = "https://image.tmdb.org/t/p/w500"
+                                ) { movieId ->
+                                    launchDetailActivity(movieId)
+                                }
                             }
                         }
+                    } else if (!movieState.error.isNullOrEmpty()) {
+                        Toast.makeText(LocalContext.current, movieState.error, Toast.LENGTH_LONG)
+                            .show()
+                        Log.e("Error",movieState.error)
                     }
+
+
                 }
             }
         }
