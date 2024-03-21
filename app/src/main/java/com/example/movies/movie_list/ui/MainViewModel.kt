@@ -9,7 +9,11 @@ import com.example.movies.movie_list.domain.use_case.MovieListUseCase
 import com.example.movies.movie_list.domain.use_case.SearchQueryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +37,8 @@ class MainViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val actualMovieList = mutableListOf<Movie>()
+
+    var searchJob: Job? = null
 
     init {
         getMovies()
@@ -61,24 +67,25 @@ class MainViewModel @Inject constructor(
         }
     }
 
-//    val filteredMovies: Flow<List<Movie>> = combine(_movieList, searchQuery) { movieList, query ->
-//        if (query.isBlank()) {
-//            return@combine movieList.data
-//        } else {
-//            return@combine movieList.data.filter { it.title.contains(query, ignoreCase = true) }
-//        }
-//    }
-
+    @OptIn(FlowPreview::class)
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        if (_searchQuery.value.isBlank())
-            _movieList.value = MovieListScreenState(data = actualMovieList)
-        else
-            _movieList.value = MovieListScreenState(
-                data = searchQueryUseCase.invoke(
-                    _searchQuery.value,
-                    _movieList.value.data
-                )
-            )
+        viewModelScope.launch {
+            _searchQuery.debounce(200) //For efficient searching and block overwhelming api requests
+                .collectLatest {
+                    if (_searchQuery.value.isBlank())
+                        _movieList.value = MovieListScreenState(data = actualMovieList)
+                    else
+                        _movieList.value = MovieListScreenState(
+                            data = searchQueryUseCase.invoke(
+                                _searchQuery.value,
+                                _movieList.value.data
+                            )
+                        )
+                }
+        }
+
+
+
     }
 }

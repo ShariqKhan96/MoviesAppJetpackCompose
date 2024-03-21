@@ -1,8 +1,9 @@
 package com.example.movies.movie_detail.di
 
-import com.example.movies.api.ApiService
-import com.example.movies.dao.MovieDao
-import com.example.movies.dao.MovieDetailsDao
+import com.example.movies.core.api.ApiService
+import com.example.movies.core.db.dao.MovieDao
+import com.example.movies.core.db.dao.MovieDetailsDao
+import com.example.movies.core.manager.ConnectivityManager
 import com.example.movies.movie_detail.data.repository_impl.MovieDetailRepositoryImpl
 import com.example.movies.movie_detail.domain.MovieDetailRepository
 import com.example.movies.movie_detail.domain.use_case.GetMovieDetailByIdUseCase
@@ -26,8 +27,14 @@ object MovieDetailModule {
     fun provideMovieDetailRepository(
         apiService: ApiService,
         movieDetailsDao: MovieDetailsDao,
+        connectivityManager: ConnectivityManager
     ): MovieDetailRepository =
-        MovieDetailRepositoryImpl(apiService, movieDetailsDao, Dispatchers.Main)
+        MovieDetailRepositoryImpl(
+            apiService,
+            movieDetailsDao,
+            connectivityManager,
+            Dispatchers.Main
+        )
 
 
     @Provides

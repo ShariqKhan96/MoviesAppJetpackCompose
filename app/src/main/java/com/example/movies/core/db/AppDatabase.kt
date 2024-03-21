@@ -1,10 +1,10 @@
-package com.example.movies
+package com.example.movies.core.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.movies.dao.MovieDao
-import com.example.movies.dao.MovieDetailsDao
+import com.example.movies.core.db.dao.MovieDao
+import com.example.movies.core.db.dao.MovieDetailsDao
 import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
 import com.example.movies.movie_list.data.dto.local.MovieEntity
 

@@ -1,11 +1,12 @@
-package com.example.movies.modules
+package com.example.movies.core.di.modules
 
 import android.content.Context
 import androidx.room.Room
-import com.example.movies.AppDatabase
-import com.example.movies.dao.MovieDao
-import com.example.movies.api.ApiService
-import com.example.movies.dao.MovieDetailsDao
+import com.example.movies.core.db.AppDatabase
+import com.example.movies.core.db.dao.MovieDao
+import com.example.movies.core.api.ApiService
+import com.example.movies.core.db.dao.MovieDetailsDao
+import com.example.movies.core.manager.ConnectivityManager
 import com.example.movies.movie_list.domain.repository.MovieRepository
 import com.example.movies.movie_list.data.repository_impl.MovieRepositoryImpl
 import dagger.Module
@@ -24,11 +25,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+
     @Provides
-    @Singleton
-        fun provideMoviesRepository(apiService: ApiService, moviesDao: MovieDao, movieDetailsDao: MovieDetailsDao, couroutineScope : CoroutineDispatcher): MovieRepository = MovieRepositoryImpl(moviesDao, apiService)
-
-
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager =
+        ConnectivityManager(context)
     @Provides
     @Singleton
     fun provideCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
@@ -52,7 +52,6 @@ object AppModule {
             .fallbackToDestructiveMigration()
             .build()
     }
-
 
 
     @Provides

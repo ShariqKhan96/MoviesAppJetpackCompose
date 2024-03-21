@@ -5,9 +5,13 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.example.movies.movie_detail.domain.model.MovieDetails
 import com.example.movies.ui.theme.MoviesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +28,8 @@ class MovieDetailsActivity : ComponentActivity() {
             val movieDetailState = viewModel.movieDetailState.collectAsState().value
             MoviesTheme {
                 if (movieDetailState.loading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(modifier =  Modifier.
+                    fillMaxSize().padding(150.dp))
                 }
                 if (movieDetailState.data.notNull()) {
                     MovieDetailScreen(movieDetail = movieDetailState.data!!)

@@ -1,4 +1,4 @@
-package com.example.movies
+package com.example.movies.core.db
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

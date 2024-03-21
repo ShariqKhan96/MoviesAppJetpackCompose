@@ -1,4 +1,4 @@
-package com.example.movies.api
+package com.example.movies.core.api
 
 import com.example.movies.movie_detail.data.dto.remote.MovieDetailResponse
 import com.example.movies.movie_list.data.dto.remote.MovieResponse

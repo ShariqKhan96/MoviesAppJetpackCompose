@@ -1,7 +1,7 @@
-package com.example.movies.modules
+package com.example.movies.core.di.modules
 
 import android.content.Context
-import com.example.movies.api.ApiService
+import com.example.movies.core.api.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

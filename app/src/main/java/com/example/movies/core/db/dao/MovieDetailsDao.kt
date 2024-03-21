@@ -1,4 +1,4 @@
-package com.example.movies.dao
+package com.example.movies.core.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

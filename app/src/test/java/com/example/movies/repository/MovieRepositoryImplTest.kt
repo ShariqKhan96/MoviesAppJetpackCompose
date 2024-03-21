@@ -3,16 +3,18 @@ package com.example.movies.repository
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.movies.movie_list.data.dto.remote.MovieResponse
-import com.example.movies.api.*
-import com.example.movies.dao.MovieDao
-import com.example.movies.dao.MovieDetailsDao
+import com.example.movies.core.api.ApiService
+import com.example.movies.core.db.dao.MovieDao
+import com.example.movies.core.db.dao.MovieDetailsDao
 import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
 import com.example.movies.movie_detail.data.dto.remote.Genre
 import com.example.movies.movie_detail.data.dto.remote.MovieDetailResponse
 import com.example.movies.movie_detail.data.dto.remote.ProductionCompany
 import com.example.movies.movie_detail.data.dto.remote.ProductionCountry
 import com.example.movies.movie_detail.data.dto.remote.SpokenLanguage
+import com.example.movies.movie_detail.data.repository_impl.MovieDetailRepositoryImpl
 import com.example.movies.movie_list.data.repository_impl.MovieRepositoryImpl
+import com.example.movies.movie_list.data.toDomain
 import com.example.movies.movie_list.data.toEntity
 import com.example.movies.movie_list.domain.model.Movie
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,8 @@ import retrofit2.Response
 @RunWith(AndroidJUnit4::class)
 class MovieRepositoryImplTest {
     private lateinit var repository: MovieRepositoryImpl
+
+    private lateinit var detailRepository: MovieDetailRepositoryImpl
 
     @Mock
     private lateinit var movieDao: MovieDao
@@ -82,7 +86,8 @@ class MovieRepositoryImplTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         repository =
-            MovieRepositoryImpl(movieDao, apiService, movieDetailsDao, Dispatchers.Unconfined)
+            MovieRepositoryImpl(movieDao, apiService)
+        detailRepository = MovieDetailRepositoryImpl(apiService,movieDetailsDao,Dispatchers.Main)
     }
 
     @Test
@@ -126,9 +131,9 @@ class MovieRepositoryImplTest {
         )
         `when`(movieDetailsDao.getMovieDetail(movieId)).thenReturn(testLocalMovieDetail)
 
-       // val result = repository.getMovieDetail(movieId)
+         val result = detailRepository.getMovieDetail(movieId)
 
-       // assert(result == testLocalMovieDetail)
+         assert(result.data == testLocalMovieDetail.toDomain())
     }
 
     @Test
@@ -137,9 +142,9 @@ class MovieRepositoryImplTest {
         val testLocalMovieDetail = createMockMovieDetailEntity()
         `when`(movieDetailsDao.getMovieDetail(movieId)).thenReturn(testLocalMovieDetail)
 
-       // val result = repository.getMovieDetail(movieId)
+         val result = detailRepository.getMovieDetail(movieId)
 
-       // assert(result == testLocalMovieDetail)
+         assert(result.data == testLocalMovieDetail.toDomain())
     }
 
     @Test
@@ -150,7 +155,7 @@ class MovieRepositoryImplTest {
         `when`(apiService.getMovieDetails(movieId))
             .thenReturn(Response.success(testRemoteMovieDetailResponse))
 
-      //  repository.getMovieDetail(movieId)
+          detailRepository.getMovieDetail(movieId)
 
         Mockito.verify(movieDetailsDao)
             .insertMovieDetail(testRemoteMovieDetailResponse.toMovieDetailEntity())
