@@ -20,7 +20,6 @@
 - Data Layer => network and db calling with repository implementation.
 - Domain Layer => Repository definition, Use Cases and model transformations.
 - UI Layer => Compose Activity, Composables, ViewModels, Screen State Classes.
-- Mapper functions to transform dtos to models.
 
 ## References:
 **Modern Android Architecture**: https://developer.android.com/topic/architecture
