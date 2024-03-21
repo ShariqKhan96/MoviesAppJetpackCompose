@@ -2,8 +2,9 @@ package com.example.movies.screen.movie_list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.movies.Movie
-import com.example.movies.repository.MovieRepository
+import com.example.movies.core.resource.Resource
+import com.example.movies.movie_list.domain.model.Movie
+import com.example.movies.movie_list.domain.repository.MovieRepository
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -35,22 +36,22 @@ class MainViewModelTest {
     @Mock
     private lateinit var repository: MovieRepository
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: TestMainViewModel
     private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        viewModel = MainViewModel(repository, testDispatcher)
+        viewModel = TestMainViewModel(repository, testDispatcher)
     }
 
     @Test
     fun shouldFilterListOnBasisOfSearchQuery()  = runBlocking  {
         val movies = createFakeMovieList(5)
-        movies[0].title = "testSample"
-        movies[1].title = "testSample2"
-        val searchQuery = "test"
-        `when`(repository.refreshMovies()).thenReturn(flowOf(movies))
+        movies[0].title = "sampleMovie"
+        movies[1].title = "sampleMoviePart2"
+        val searchQuery = "sample"
+        `when`(repository.refreshMovies()).thenReturn(Resource.Success(movies))
 
         viewModel.updateSearchQuery(searchQuery)
         viewModel.refreshData()
@@ -63,7 +64,7 @@ class MainViewModelTest {
     @Test
     fun `refreshData should update movieList with data from repository`() = testDispatcher.runBlockingTest {
         val testMovieList = createFakeMovieList(5)
-        `when`(repository.refreshMovies()).thenReturn( flowOf(testMovieList))
+        `when`(repository.refreshMovies()).thenReturn(Resource.Success(testMovieList))
 
         viewModel.refreshData()
 

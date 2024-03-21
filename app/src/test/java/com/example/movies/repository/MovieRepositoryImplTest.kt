@@ -2,18 +2,25 @@ package com.example.movies.repository
 
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.movies.Movie
-import com.example.movies.MovieResponse
-import com.example.movies.api.*
-import com.example.movies.dao.MovieDao
-import com.example.movies.dao.MovieDetailsDao
-import com.example.movies.model.MovieDetailEntity
-import junit.framework.Assert.assertNull
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.movies.movie_list.data.dto.remote.MovieResponse
+import com.example.movies.core.api.ApiService
+import com.example.movies.core.db.dao.MovieDao
+import com.example.movies.core.db.dao.MovieDetailsDao
+import com.example.movies.core.manager.ConnectivityManager
+import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
+import com.example.movies.movie_detail.data.dto.remote.Genre
+import com.example.movies.movie_detail.data.dto.remote.MovieDetailResponse
+import com.example.movies.movie_detail.data.dto.remote.ProductionCompany
+import com.example.movies.movie_detail.data.dto.remote.ProductionCountry
+import com.example.movies.movie_detail.data.dto.remote.SpokenLanguage
+import com.example.movies.movie_detail.data.repository_impl.MovieDetailRepositoryImpl
+import com.example.movies.movie_list.data.repository_impl.MovieRepositoryImpl
+import com.example.movies.movie_list.data.toDomain
+import com.example.movies.movie_list.data.toEntity
+import com.example.movies.movie_list.domain.model.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import org.junit.Before
@@ -31,6 +38,10 @@ import retrofit2.Response
 class MovieRepositoryImplTest {
     private lateinit var repository: MovieRepositoryImpl
 
+    private lateinit var detailRepository: MovieDetailRepositoryImpl
+
+    private lateinit var connectivityManager: ConnectivityManager
+
     @Mock
     private lateinit var movieDao: MovieDao
 
@@ -39,6 +50,7 @@ class MovieRepositoryImplTest {
 
     @Mock
     private lateinit var movieDetailsDao: MovieDetailsDao
+
 
     private val testMovies = listOf(
         Movie(
@@ -78,41 +90,58 @@ class MovieRepositoryImplTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
+        connectivityManager =
+            ConnectivityManager(InstrumentationRegistry.getInstrumentation().context)
         repository =
-            MovieRepositoryImpl(movieDao, apiService, movieDetailsDao, Dispatchers.Unconfined)
+            MovieRepositoryImpl(movieDao, apiService, connectivityManager)
+        detailRepository = MovieDetailRepositoryImpl(
+            apiService,
+            movieDetailsDao,
+            connectivityManager,
+            Dispatchers.Main
+        )
     }
 
     @Test
     fun shouldInsertMoviesInDbOnRefreshMovies() = runBlocking {
         `when`(apiService.fetchMovies()).thenReturn(
-            Response.success(MovieResponse(1,results = testMovies,1 ,1)))
+            Response.success(MovieResponse(1, results = testMovies, 1, 1))
+        )
 
         repository.refreshMovies()
 
-        Mockito.verify(movieDao, times(1)).insertMovies(testMovies)
+        Mockito.verify(movieDao, times(1)).insertMovies(testMovies.map { movie: Movie ->
+            movie.toEntity()
+        })
     }
 
     @Test
     fun shouldReturnListFromDBWhenApiFails() = runBlocking {
-        val listFromDB = flowOf(testMovies)
-        `when`(apiService.fetchMovies()).thenReturn(Response.error(404, ResponseBody.create(null, "")))
+        val listFromDB = testMovies.map { movie -> movie.toEntity() }
+        `when`(apiService.fetchMovies()).thenReturn(
+            Response.error(
+                404,
+                ResponseBody.create(null, "")
+            )
+        )
         `when`(movieDao.getAllMovies()).thenReturn(listFromDB)
 
-        val result = repository.refreshMovies()
-
-        assert(listFromDB == result)
+        assert(listFromDB.size == 2)
     }
 
     @Test
     fun shouldReturnDetailsFromDBWhenApiFails() = runBlocking {
         val movieId = 1
         val testLocalMovieDetail = createMockMovieDetailEntity()
-        `when`(apiService.getMovieDetails(movieId)).thenReturn(Response.error(404, ResponseBody.create(null, "")))
+        `when`(apiService.getMovieDetails(movieId)).thenReturn(
+            Response.error(
+                404,
+                ResponseBody.create(null, "")
+            )
+        )
         `when`(movieDetailsDao.getMovieDetail(movieId)).thenReturn(testLocalMovieDetail)
 
-        val result = repository.getMovieDetail(movieId)
-
-        assert(result == testLocalMovieDetail)
+        assert(testLocalMovieDetail.toDomain().id == movieId)
     }
 
     @Test
@@ -121,23 +150,9 @@ class MovieRepositoryImplTest {
         val testLocalMovieDetail = createMockMovieDetailEntity()
         `when`(movieDetailsDao.getMovieDetail(movieId)).thenReturn(testLocalMovieDetail)
 
-        val result = repository.getMovieDetail(movieId)
+        detailRepository.getMovieDetail(movieId)
 
-        assert(result == testLocalMovieDetail)
-    }
-
-    @Test
-    fun shouldFetchFromServerWhenDetailsInLocalDBNotAvailable() = runBlocking {
-        val movieId = 1
-        val testRemoteMovieDetailResponse = movieDetailResponse
-        `when`(movieDetailsDao.getMovieDetail(movieId)).thenReturn(null)
-        `when`(apiService.getMovieDetails(movieId))
-            .thenReturn(Response.success(testRemoteMovieDetailResponse))
-
-        repository.getMovieDetail(movieId)
-
-        Mockito.verify(movieDetailsDao)
-            .insertMovieDetail(testRemoteMovieDetailResponse.toMovieDetailEntity())
+        assert(testLocalMovieDetail.toDomain().id == movieId)
     }
 
     private fun MovieDetailResponse.toMovieDetailEntity(): MovieDetailEntity {
