@@ -20,16 +20,16 @@ class MovieRepositoryImpl @Inject constructor(
 ) : MovieRepository {
 
     override suspend fun refreshMovies(): Resource<List<Movie>> {
-        if (!connectivityManager.isNetworkConnected()) {
-            val list = movieDao.getAllMovies()
-            return if (list.isNotEmpty()) {
-                Resource.Success(
-                    data = list
-                        .map { movieEntity -> movieEntity.toDomain() })
-            } else {
-                Resource.Error(error = "No internet connection available.")
-            }
-        }
+//        if (!connectivityManager.isNetworkConnected()) {
+//            val list = movieDao.getAllMovies()
+//            return if (list.isNotEmpty()) {
+//                Resource.Success(
+//                    data = list
+//                        .map { movieEntity -> movieEntity.toDomain() })
+//            } else {
+//                Resource.Error(error = "No internet connection available.")
+//            }
+//        }
         try {
             val movies = apiService.fetchMovies()
             if (movies.isSuccessful)

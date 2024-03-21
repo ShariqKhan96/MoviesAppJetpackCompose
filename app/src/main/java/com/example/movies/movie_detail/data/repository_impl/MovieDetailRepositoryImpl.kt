@@ -22,16 +22,16 @@ class MovieDetailRepositoryImpl @Inject constructor(
 ) : MovieDetailRepository {
     override suspend fun getMovieDetail(movieId: Int): Resource<MovieDetails> {
 
-        if (!connectivityManager.isNetworkConnected()) {
-            val obj = getMovieDetailFromDb(movieId)?.toDomain()
-            obj?.let {
-                return Resource.Success(
-                    data = obj
-                )
-            } ?: run {
-                return Resource.Error(error = "No internet connection available.")
-            }
-        }
+//        if (!connectivityManager.isNetworkConnected()) {
+//            val obj = getMovieDetailFromDb(movieId)?.toDomain()
+//            obj?.let {
+//                return Resource.Success(
+//                    data = obj
+//                )
+//            } ?: run {
+//                return Resource.Error(error = "No internet connection available.")
+//            }
+//        }
         try {
             val remoteMovieDetail = apiService.getMovieDetails(movieId)
             if (remoteMovieDetail.isSuccessful) {
