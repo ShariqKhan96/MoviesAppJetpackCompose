@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.movies.movie_detail.ui.MovieItem
 import com.example.movies.movie_detail.ui.MovieDetailsActivity
 import com.example.movies.ui.theme.MoviesTheme
@@ -54,22 +55,22 @@ class MainActivity : ComponentActivity() {
                             viewModel.updateSearchQuery(query)
                         },
                         singleLine = true,
-                        textStyle = TextStyle(color = Color.Black),
+                        textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         decorationBox = { innerTextField ->
                             Row(
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 8.dp)
                                     .fillMaxWidth()
                                     .background(
-                                        color = Color(0xFFD2F3F2),
+                                        color = Color(0xFFFFFFFF),
                                         shape = RoundedCornerShape(size = 16.dp)
                                     )
                                     .border(
                                         width = 2.dp,
-                                        color = Color.Cyan,
+                                        color = Color.Gray,
                                         shape = RoundedCornerShape(size = 16.dp)
                                     )
                                     .padding(all = 16.dp),
@@ -78,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
-                                    contentDescription = "Favorite icon",
+                                    contentDescription = "Search icon",
                                     tint = Color.DarkGray
                                 )
                                 Spacer(modifier = Modifier.width(width = 8.dp))
