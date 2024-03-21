@@ -6,10 +6,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.movies.core.resource.Resource
 import com.example.movies.movie_detail.data.dto.local.MovieDetailEntity
 import com.example.movies.movie_detail.domain.MovieDetailRepository
-import com.example.movies.movie_detail.domain.use_case.GetMovieDetailByIdUseCase
-import com.example.movies.movie_detail.ui.MovieDetailViewModel
+import com.example.movies.movie_detail.ui.TestMovieDetailViewModel
 import com.example.movies.movie_list.data.toDomain
-import com.example.movies.movie_list.domain.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -35,15 +33,12 @@ class MovieDetailViewModelTest {
     @Mock
     lateinit var repository: MovieDetailRepository
 
-    private lateinit var viewModel: MovieDetailViewModel
-
-    private lateinit var getMovieDetailByIdUseCase: GetMovieDetailByIdUseCase
+    private lateinit var viewModel: TestMovieDetailViewModel
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        getMovieDetailByIdUseCase = GetMovieDetailByIdUseCase(repository)
-        viewModel = MovieDetailViewModel(getMovieDetailByIdUseCase)
+        viewModel = TestMovieDetailViewModel(repository)
     }
 
     @After
@@ -54,14 +49,14 @@ class MovieDetailViewModelTest {
     @Test
     fun shouldEmitDataOnFetchMovieDetails() = runTest {
         val movieId = 123
-        val movieDetailResponse = createMockMovieDetailEntity().toDomain() // Create a mock MovieDetailEntity
-        Mockito.`when`(repository.getMovieDetail(movieId)).thenReturn(Resource.Success(movieDetailResponse))
+        val movieDetailResponse = createMockMovieDetailEntity() // Create a mock MovieDetailEntity
+        Mockito.`when`(repository.getMovieDetail(movieId)).thenReturn(Resource.Success(movieDetailResponse.toDomain()))
 
         viewModel.fetchMovieDetail(movieId)
 
-        val result = viewModel.movieDetailState.value.data // Observe the StateFlow
+        val result = viewModel.movieDetail.first() // Observe the StateFlow
         assertNotNull(result)
-        assertEquals(movieDetailResponse, result)
+        assertEquals(movieDetailResponse.toDomain(), result)
     }
 
     private fun createMockMovieDetailEntity(): MovieDetailEntity {
